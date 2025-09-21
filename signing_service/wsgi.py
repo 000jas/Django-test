@@ -1,6 +1,5 @@
-import os
-from django.core.wsgi import get_wsgi_application
+# api/wsgi.py
+from vercel_wsgi import make_wsgi_app
+from signing_service.wsgi import application
 
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'signing_service.settings')
-application = get_wsgi_application()
+app = make_wsgi_app(application)
