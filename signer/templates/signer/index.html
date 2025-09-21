@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Message Signing</title>
+</head>
+<body>
+<h1>CRYPTOGRAPHIC SIGNING</h1>
+
+<h2>Sign a Message</h2>
+<textarea id="signMessage" rows="4" cols="50" placeholder="Type your message"></textarea><br>
+<button onclick="signMessage()">Sign</button>
+<p>Signature: <span id="signature"></span></p>
+
+<h2>Verify a Message</h2>
+<textarea id="verifyMessage" rows="4" cols="50" placeholder="Message"></textarea><br>
+<textarea id="verifySignature" rows="2" cols="50" placeholder="Signature"></textarea><br>
+<button onclick="verifyMessage()">Verify</button>
+<p>Result: <span id="verifyResult"></span></p>
+
+<script>
+function signMessage() {
+    const msg = document.getElementById('signMessage').value;
+    if (!msg) { alert("Enter a message"); return; }
+
+    fetch('/api/sign/', {           // <-- exact URL
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({message: msg})
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);          // debug
+        document.getElementById('signature').innerText = data.signature || "Error";
+    })
+    .catch(err => console.error(err));
+}
+
+function verifyMessage() {
+    const msg = document.getElementById('verifyMessage').value;
+    const sig = document.getElementById('verifySignature').value;
+    if (!msg || !sig) { alert("Message and signature required"); return; }
+
+    fetch('/api/verify/', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({message: msg, signature: sig})
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log(data);          // debug
+        document.getElementById('verifyResult').innerText = data.valid;
+    })
+    .catch(err => console.error(err));
+}
+</script>
+</body>
+</html>
+
